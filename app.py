@@ -58,7 +58,7 @@ def authenticate():
 
 @app.route("/")
 def home():
-	return "hello world"
+	return render_template('home.html')
 
 @app.route("/auth")
 @basic_auth
