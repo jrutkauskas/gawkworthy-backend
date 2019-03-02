@@ -103,7 +103,7 @@ Date.prototype.fromDatetimeLocal = (function (BST) {
 			"<br>Longitude: " + position.coords.longitude; 
 		}
 
-		document.querySelector("#form").addEventListener("submit", function(e)
+		document.querySelector("#post").addEventListener("click", function(e)
 		{
 			if (e.preventDefault) e.preventDefault();
 
@@ -143,7 +143,7 @@ Date.prototype.fromDatetimeLocal = (function (BST) {
 								title.value = "";
 								desc.value = "";
 								url.value = "";
-								
+
 								updateElementsOnMap()
 								
 							}
