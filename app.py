@@ -69,7 +69,7 @@ def test_auth():
 @app.route("/signup/", methods=["GET", "POST"])
 def sign_up():
 	if "email" in session:
-		return redirect(url_for("test_auth"))
+		return redirect("/map")
 	elif request.method == "GET":
 		return render_template("signup.html")
 	elif request.method == "POST":
@@ -86,7 +86,7 @@ def sign_up():
 				db.session.commit()
 
 				flash("Signed up new user: %s.  Please log in to your new account." % request.form["user"])
-				return redirect(url_for("test_auth"))
+				return redirect("/map")
 
 		else:
 			flash("Error signing up new patron.  Need to complete all text boxes")
@@ -156,13 +156,13 @@ def post_ui():
 	if "email" in session:
 		return render_template("make_spectacle.html")
 	else:
-		return redirect(url_for('login'))
+		return redirect("/login")
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
 	if "email" in session:
 		flash("Already Logged In!")
-		return redirect(url_for("map_ui"))
+		return redirect("/map")
 
 	elif request.method == "POST":
 		username = request.form["user"]
@@ -174,7 +174,7 @@ def login():
 				flash("Incorrect Username or password")
 			else:
 				session["email"] = username
-				return redirect(url_for("map_ui"))
+				return redirect("/map")
 				
 		else:
 			flash("An error occurred logging you in")
@@ -184,7 +184,7 @@ def login():
 @app.route('/map')
 def map_ui():
 	if not "email" in session:
-		return redirect(url_for('login'))
+		return redirect("/login")
 	return render_template('map.html')
 
 
