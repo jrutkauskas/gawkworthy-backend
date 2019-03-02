@@ -95,6 +95,19 @@ def sign_up():
 	flash("An unknown error occurred on signup attempt")
 	return render_template("signup.html")	
 
+@app.route('/logout')
+def logout():
+	if "email" in session:
+		# note, here were calling the .clear() method for the python dictionary builtin
+		session.clear()
+		# flashes are stored in session["_flashes"], so we need to clear the session /before/ we set the flash message!
+		flash("Successfully logged out!")
+
+		return redirect(url_for("login"))
+	else:
+		flash("Not currently logged in!")
+		return redirect(url_for("login"))
+
 @app.route("/api/spectacles", methods=["GET", "POST"])
 def spectacles_list():
 	if not "email" in session:
