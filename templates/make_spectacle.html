@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Make Spectacle - {{ super() }}{% endblock %}
+
+{% block body %}
+<script>
+	makeRequest = function(url, method, callback, body)
+	{
+			var httpRequest = new XMLHttpRequest();
+			if (!httpRequest) {
+				alert('Giving up :( Cannot create an XMLHTTP instance');
+				return false;
+			}
+			
+			httpRequest.onreadystatechange = function(){callback(httpRequest)};
+			httpRequest.open(method, url);
+			if(!body)
+			{
+				httpRequest.send();
+			}
+			else
+			{
+				httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				httpRequest.send(body)
+			}
+		
+	}
+
+	// FROM https://hackernoon.com/using-the-input-datetime-local-9503e7efdce
+	Date.prototype.toDatetimeLocal =
+  function toDatetimeLocal() {
+    var
+      date = this,
+      ten = function (i) {
+        return (i < 10 ? '0' : '') + i;
+      },
+      YYYY = date.getFullYear(),
+      MM = ten(date.getMonth() + 1),
+      DD = ten(date.getDate()),
+      HH = ten(date.getHours()),
+      II = ten(date.getMinutes()),
+      SS = ten(date.getSeconds())
+    ;
+    return YYYY + '-' + MM + '-' + DD + 'T' +
+             HH + ':' + II; //+ ':' + SS
+  };
+
+Date.prototype.fromDatetimeLocal = (function (BST) {
+  // BST should not be present as UTC time
+  return new Date(BST).toISOString().slice(0, 16) === BST ?
+    // if it is, it needs to be removed
+    function () {
+      return new Date(
+        this.getTime() +
+        (this.getTimezoneOffset() * 60000)
+      ).toISOString();
+    } :
+    // otherwise can just be equivalent of toISOString
+    Date.prototype.toISOString;
+}('2006-06-06T06:06'));
+////////////////////////////
+
+
+
+	window.onload =  function()
+	{
+		exp = document.querySelector("#expiration");
+		exp.value = (new Date(Date.now() + 86400000)).toDatetimeLocal()
+		
+		showtime = document.querySelector("#showtime");
+		showtime.value = (new Date(Date.now())).toDatetimeLocal()
+
+		x = document.querySelector("body");
+
+		function getLocation() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(showPosition);
+			} else {
+				alert("Geolocation is not supported by this browser.");
+			}
+		}
+
+		function showPosition(position) {
+			x.innerHTML += "Latitude: " + position.coords.latitude + 
+			"<br>Longitude: " + position.coords.longitude; 
+		}
+
+		document.querySelector("#form").addEventListener("submit", function(e)
+		{
+			if (e.preventDefault) e.preventDefault();
+
+			//get location, attach to the request
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position)
+				{
+					//now have location
+					title = document.querySelector("#title");
+					desc = document.querySelector("#desc");
+					url = document.querySelector("#url")
+					showtime = document.querySelector("#showtime");
+					exp = document.querySelector("#expiration");
+
+					//Form request
+					data = 
+					{
+						'latitude': position.coords.latitude,
+						'longitude': position.coords.longitude,
+						'title': title.value,
+						'description': desc.value,
+						'showtime': new Number(new Date(showtime.value)),
+						'expiration': new Number(new Date(exp.value))
+					}
+					
+					makeRequest("/api/spectacles", "POST", function(req)
+					{
+						if (req.readyState === XMLHttpRequest.DONE) {
+							if(req.status !== 200) 
+							{
+								alert("Having Trouble Submitting, try again.")
+							}
+							else
+							{
+								alert("Successfully Submitted!")
+							}
+            			}
+					}, JSON.stringify(data));
+
+					console.log(data, JSON.stringify(data));
+
+
+
+				});
+			} else {
+				alert("Geolocation is not supported by this browser.");
+			}
+			//send the request out
+
+			// You must return false to prevent the default form behavior
+			return false;
+		});
+
+		//getLocation();
+	};
+
+	
+	
+</script>
+	<div class="row">
+		<div class='col-sm'><h1>Share a Spectacle</h1></div>
+	</div>
+	<div class="row">
+		
+		<form class="col-sm" id="form" >
+				<div class="form-group">
+						<label>Title:</label> <input type="text" name="title" id="title" class="form-control" required/>
+					</div>
+			<div class="form-group">
+			<label>Description:</label>  <textarea type="text" name="description"  id="desc" class="form-control"></textarea>
+		</div><div class="form-group">
+			<label>Photo URL:</label> <input type="password" name="photo url" id="url" class="form-control"/>
+		</div>
+		<div class="form-group">
+			<label>Expires:</label> <input type="datetime-local" name="expiration" id="expiration" class="form-control" required/>
+		</div><div class="form-group">
+			<label>Public At:</label> <input type="datetime-local" name="showtime" id="showtime" class="form-control" required/>
+		</div>
+		<div class="form-group">
+			<button   style="width:100%" class="btn btn-primary" id="post">Post</button>
+			</div>
+		</form>
+		<div class="col-sm"></div>
+	</div>
+{% endblock %}

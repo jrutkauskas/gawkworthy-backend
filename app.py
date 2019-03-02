@@ -5,7 +5,7 @@ import json
 from flask_restful import Api, Resource
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-from model import db, User
+from model import db, User, Spectacle
 
 import os
 app = Flask(__name__)
@@ -15,6 +15,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
 # Suppress deprecation warning
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 api = Api(app, prefix="/api")
 db.init_app(app)
 
@@ -36,7 +37,7 @@ def check_auth(email=None, password=None):
 		return False
 	
 	u = User.query.filter_by(email=email).first()
-	if check_password_hash(u.password,password):
+	if u and check_password_hash(u.password,password):
 		return True
 	else:
 		return False
@@ -58,10 +59,10 @@ def test_auth():
 	
 	return "Authorized " + session["email"]
 
-@app.route("/signup", methods=["GET", "POST"])
+@app.route("/signup/", methods=["GET", "POST"])
 def sign_up():
 	if "email" in session:
-		return redirect(url_for(test_auth))
+		return redirect(url_for("test_auth"))
 	elif request.method == "GET":
 		return render_template("signup.html")
 	elif request.method == "POST":
@@ -87,7 +88,23 @@ def sign_up():
 	flash("An unknown error occurred on signup attempt")
 	return render_template("signup.html")	
 
+@app.route("/api/spectacles", methods=["GET", "POST"])
+@basic_auth
+def spectacles_list():
+	if request.method == "GET":
+		spectacles_list = Spectacle.query.all()
+		return jsonify(spectacles_list)
+	elif request.method == "POST":
+		data = request.get_json()
+		print(data['latitude'])
+		return "Success"
+	return "unimplemented api for post"
 
+
+@app.route("/post")
+@basic_auth
+def post_ui():
+	return render_template("make_spectacle.html")
 
 app.secret_key = "my secret key is better than yours"
 
