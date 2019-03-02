@@ -146,18 +146,44 @@ def get_token():
 			u.key = token
 			return token
 		else:
-			return Response('Username or Password Incorredt\n', 401)
+			return Response('Username or Password Incorrect\n', 401)
 	else:
 		return Response('Unauthorized.\n', 401)
 
 @app.route("/post")
-@basic_auth
 def post_ui():
-	return render_template("make_spectacle.html")
+	if "email" in session:
+		return render_template("make_spectacle.html")
+	else:
+		return redirect(url_for('login'))
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+	if "email" in session:
+		flash("Already Logged In!")
+		return redirect(url_for("map_ui"))
+
+	elif request.method == "POST":
+		username = request.form["user"]
+		password = request.form["pass"]
+
+		if username and password:
+			user = User.query.filter_by(email=username).first()
+			if not user or not check_password_hash(user.password, password):
+				flash("Incorrect Username or password")
+			else:
+				session["email"] = username
+				return redirect(url_for("map_ui"))
+				
+		else:
+			flash("An error occurred logging you in")
+
+	return render_template("login.html")
 
 @app.route('/map')
-@basic_auth
 def map_ui():
+	if not "email" in session:
+		return redirect(url_for('login'))
 	return render_template('map.html')
 
 
@@ -165,7 +191,7 @@ def map_ui():
 app.secret_key = "my secret key is better than yours"
 
 if __name__ == "__main__":
-	app.run(threaded=True, ssl_context='adhoc')
+	app.run(threaded=True)
 
 
 

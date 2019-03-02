@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Log in - {{ super() }}{% endblock %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-sm"></div>
+		<form action="" method="post" class="col-sm" >
+			<div class="form-group">
+			<label>Email:</label>  <input type="email" name="user"  class="form-control"/>
+		</div><div class="form-group">
+			<label>Password:</label> <input type="password" name="pass" class="form-control"/>
+		</div><div class="form-group">
+			<input type="submit" value="submit" class="btn btn-default"/>
+			</div>
+		</form>
+		<div class="col-sm"></div>
+	</div>
+{% endblock %}
