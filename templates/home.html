@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Home - {{ super() }}{% endblock %}
+
+{% block body %}
+		<h1 class="jumbotron">Gawkworthy</h1>
+		<p>Gawkworthy is a serveice for hobbyist rubbernecking.  It's a place to share the things around you that are shocking, funny, or just plain neat to look at.</p>
+		<p style="text-align: center;"><a  class="btn btn-lg btn-primary" href="{{url_for("login")}}">Login &gt;</a>
+		<a  class="btn btn-lg btn-primary" href="{{url_for("signup_patron")}}">Sign up as a Patron &gt;</a></p>
+{% endblock %}

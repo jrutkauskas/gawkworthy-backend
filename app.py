@@ -115,7 +115,7 @@ def spectacles_list():
 	if request.method == "GET":
 		current_time = time.time()*1000.0
 		q = Spectacle.query.filter(Spectacle.time_to_display <= current_time, Spectacle.time_to_expire >= current_time)
-		print(request.args.get("minlat"))
+		# print(request.args.get("minlat"))
 		if request.args.get('minlat'):
 			q = q.filter(Spectacle.latitude >= request.args.get('minlat', default = '*', type = float))
 		if request.args.get('maxlat'):
