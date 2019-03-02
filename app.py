@@ -96,8 +96,9 @@ def sign_up():
 	return render_template("signup.html")	
 
 @app.route("/api/spectacles", methods=["GET", "POST"])
-@basic_auth
 def spectacles_list():
+	if not "email" in session:
+		return Response("Not logged in", 401)
 	if request.method == "GET":
 		current_time = time.time()*1000.0
 		q = Spectacle.query.filter(Spectacle.time_to_display <= current_time, Spectacle.time_to_expire >= current_time)
