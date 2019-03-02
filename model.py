@@ -10,6 +10,10 @@ class User(db.Model):
 	email = db.Column(db.String(100), nullable=False, unique=True)
 	password = db.Column(db.String(250), nullable=False)
 	
+	key = db.Column(db.String(30), unique=True)
+
+	spectacles = db.relationship("Spectacle", backref="user", lazy="select")
+
 	def __init__(self, email, name, password):
 		self.email = email
 		self.name = name
@@ -25,12 +29,16 @@ class Spectacle(db.Model):
 	latitude = db.Column(db.Float, nullable=False)
 	longitude = db.Column(db.Float, nullable=False)
 
-	def __init__(self, zip, title, photo_url, expiration, showtime):
-		self.zip_code = zip
+	user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+	def __init__(self, title, description, photo_url, expiration, showtime, latitude, longitude):
 		self.title = title
+		self.description = description
 		self.photo_url = photo_url
 		self.time_to_expire = expiration
 		self.time_to_display = showtime
+		self.latitude = latitude
+		self.longitude = longitude
 
 		
 
