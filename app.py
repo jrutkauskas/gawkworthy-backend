@@ -15,9 +15,10 @@ app = Flask(__name__)
 f=open(".env", "r")
 env = json.loads(f.read())
 
-app.config["SQLALCHEMY_DATABASE_URI"] =  "mysql+mysqldb://root:" + env['dbpass'] +"@/" +env['dbip'] +"?unix_socket=/cloudsql/" + env['instance'] #"sqlite:///" + os.path.join(
-#	app.root_path, "gawkworthy.db"
-#)
+#app.config["SQLALCHEMY_DATABASE_URI"] =  "mysql+pymysql://root:" + env['dbpass'] +"@" +env['dbip'] +"/?unix_socket=/cloudsql/" + env['instance'] #"sqlite:///" + os.path.join(
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+	app.root_path, "gawkworthy.db"
+)
 # Suppress deprecation warning
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
